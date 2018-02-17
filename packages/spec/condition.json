@@ -1,0 +1,45 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://aql.ambassify.eu/schema/condition.json",
+    "description": "A representation of a condition inside an AQL query",
+    "type": "object",
+    "required": [
+        "operator"
+    ],
+    "properties": {
+        "key": {
+            "format": "json-pointer",
+            "type": "string",
+            "description": "The key or subject to which this condition applies"
+        },
+        "operator": {
+            "type": "string",
+            "enum": [
+                "and",
+                "or",
+                "not",
+                "known",
+                "unknown",
+                "eq",
+                "neq",
+                "in",
+                "startsWith",
+                "endsWith",
+                "contains",
+                "match",
+                "gt",
+                "gte",
+                "lt",
+                "lte",
+                "between",
+                "oneOf",
+                "anyOf",
+                "allOf"
+            ],
+            "description": "Comparison operator"
+        },
+        "value": {
+            "description": "The value to compare to. Type depends on the type of your key and the chosen comparison operator"
+        }
+    }
+}

@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://aql.ambassify.eu/schema/mutation.json",
+    "description": "A representation of a mutation inside an AQL query",
+    "type": "object",
+    "required": [
+        "key",
+        "operator"
+    ],
+    "properties": {
+        "key": {
+            "format": "json-pointer",
+            "type": "string",
+            "description": "The key or subject to which this mutation applies"
+        },
+        "operator": {
+            "type": "string",
+            "enum": [
+                "set",
+                "push",
+                "pull",
+                "omit",
+                "..."
+            ],
+            "description": "Mutation operator"
+        },
+        "param": {
+            "description": "Optional parameter for the mutation. Type depends on the type of your key and the chosen mutation operator"
+        }
+    }
+}

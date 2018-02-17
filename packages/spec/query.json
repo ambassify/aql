@@ -1,0 +1,96 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://aql.ambassify.eu/schema/query.json",
+    "description": "A representation of a query in Ambassify Query Language",
+    "allOf": [
+        {
+            "type": "object",
+            "properties": {
+                "condition": { "$ref": "#condition" },
+                "mutations": {
+                    "type": "array",
+                    "items": { "$ref": "#mutation" }
+                },
+                "order": {
+                    "oneOf": [
+                        { "$ref": "#order" },
+                        {
+                            "type": "array",
+                            "items": { "$ref": "#order" }
+                        }
+                    ]
+                },
+                "fields": {
+                    "type": "object",
+                    "properties": {
+                        "include": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#field"
+                            }
+                        },
+                        "exclude": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#field"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "offset": {
+                            "type": "number"
+                        },
+                        "limit": {
+                            "type": "number"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "cursor": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "definitions": {
+        "condition": {
+            "$id": "#condition",
+            "$ref": "https://aql.ambassify.eu/schema/condition.json"
+        },
+        "mutation": {
+            "$id": "#mutation",
+            "$ref": "https://aql.ambassify.eu/schema/mutation.json"
+        },
+        "order": {
+            "$id": "#order",
+            "type": "object",
+            "properties": {
+                "key": { "$ref": "#field" },
+                "direction": {
+                    "type": "string",
+                    "enum": [
+                        "ASC",
+                        "DESC"
+                    ]
+                }
+            },
+            "required": [ "key" ]
+        },
+        "field": {
+            "$id": "#field",
+            "type": "string",
+            "format": "json-pointer"
+        }
+    }
+}
