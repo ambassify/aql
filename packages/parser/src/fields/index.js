@@ -1,4 +1,6 @@
-const { Lexer } = require("chevrotain");
+'use strict';
+
+const { Lexer } = require('chevrotain');
 const Parser = require('./parser');
 const { ordered: tokens } = require('./tokens');
 
@@ -19,4 +21,4 @@ module.exports = function parseFields(str) {
     }
 
     return result;
-}
+};

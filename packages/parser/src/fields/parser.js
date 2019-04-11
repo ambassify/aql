@@ -1,4 +1,7 @@
-const { Parser } = require("chevrotain")
+/* eslint-disable new-cap */
+'use strict';
+
+const { Parser } = require('chevrotain');
 const tokens = require('./tokens');
 
 class FieldsParser extends Parser {
@@ -22,7 +25,7 @@ class FieldsParser extends Parser {
 
             this.OPTION(() => {
                 this.CONSUME(tokens.OpenParentheses);
-                value = this.SUBRULE(this.fields)
+                value = this.SUBRULE(this.fields);
                 this.CONSUME(tokens.CloseParentheses);
             });
 
