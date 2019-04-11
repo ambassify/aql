@@ -12,13 +12,7 @@
                     "items": { "$ref": "#mutation" }
                 },
                 "order": {
-                    "oneOf": [
-                        { "$ref": "#order" },
-                        {
-                            "type": "array",
-                            "items": { "$ref": "#order" }
-                        }
-                    ]
+                    "type": "string"
                 },
                 "fields": {
                     "type": "string"
@@ -57,26 +51,6 @@
         "mutation": {
             "$id": "#mutation",
             "$ref": "https://aql.ambassify.eu/schema/mutation.json"
-        },
-        "order": {
-            "$id": "#order",
-            "type": "object",
-            "properties": {
-                "key": { "$ref": "#field" },
-                "direction": {
-                    "type": "string",
-                    "enum": [
-                        "ASC",
-                        "DESC"
-                    ]
-                }
-            },
-            "required": [ "key" ]
-        },
-        "field": {
-            "$id": "#field",
-            "type": "string",
-            "format": "json-pointer"
         }
     }
 }
