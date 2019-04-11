@@ -11,7 +11,7 @@ class FieldsParser extends Parser {
         this.RULE('fields', () => {
             const fields = {};
 
-            this.AT_LEAST_ONE_SEP({
+            this.MANY_SEP({
                 SEP: tokens.Comma,
                 DEF: () => Object.assign(fields, this.SUBRULE(this.field))
             });

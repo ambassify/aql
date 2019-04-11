@@ -7,18 +7,29 @@ const { ordered: tokens } = require('./tokens');
 const lexer = new Lexer(tokens, { positionTracking: 'onlyOffset' });
 const parser = new Parser();
 
+function throwFirstError(result) {
+    if (result.errors.length > 0) {
+        const msg = result.errors[0].message;
+        throw new Error(`Invalid field syntax: ${msg}`);
+    }
+}
+
 module.exports = function parseFields(str) {
+    if (!str)
+        return {};
+
     if (typeof str !== 'string')
         throw new TypeError('Expected input to be a string');
 
-    parser.input = lexer.tokenize(str).tokens;
+    const lexingResult = lexer.tokenize(str);
 
-    const result = parser.fields();
+    throwFirstError(lexingResult);
 
-    if (parser.errors.length > 0) {
-        const msg = parser.errors[0].message;
-        throw new Error(`Invalid field syntax: ${msg}`);
-    }
+    parser.input = lexingResult.tokens;
 
-    return result;
+    const fields = parser.fields();
+
+    throwFirstError(parser);
+
+    return fields;
 };

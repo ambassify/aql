@@ -7,7 +7,9 @@
     "node": "8"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test:lint && npm run test:unit",
+    "test:lint": "eslint --fix \"@(src|test)/**\"",
+    "test:unit": "nyc mocha --recursive"
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,8 @@
   },
   "devDependencies": {
     "eslint": "^5.16.0",
-    "eslint-config-ambassify": "^1.2.0"
+    "eslint-config-ambassify": "^1.2.0",
+    "mocha": "^6.1.2",
+    "nyc": "^13.3.0"
   }
 }
