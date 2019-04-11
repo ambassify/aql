@@ -21,21 +21,7 @@
                     ]
                 },
                 "fields": {
-                    "type": "object",
-                    "properties": {
-                        "include": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#field"
-                            }
-                        },
-                        "exclude": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#field"
-                            }
-                        }
-                    }
+                    "type": "string"
                 }
             }
         },
