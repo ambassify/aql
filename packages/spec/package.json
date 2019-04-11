@@ -1,4 +1,5 @@
 {
+    "private": true,
     "name": "@ambassify/aql-spec",
     "version": "0.0.1"
 }
