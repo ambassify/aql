@@ -1,6 +1,6 @@
 {
   "name": "@ambassify/aql-parser",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "AQL parser",
   "main": "src/index.js",
   "engines": {
