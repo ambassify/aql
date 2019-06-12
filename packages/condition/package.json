@@ -1,6 +1,6 @@
 {
     "name": "@ambassify/aql-condition",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "AQL condition tool",
     "main": "src/index.js",
     "engines": {
@@ -22,7 +22,7 @@
     },
     "homepage": "https://github.com/ambassify/aql#readme",
     "dependencies": {
-        "@ambassify/aql-parser": "^0.1.0"
+        "@ambassify/aql-parser": "^0.1.1"
     },
     "devDependencies": {
         "eslint": "^5.16.0",
