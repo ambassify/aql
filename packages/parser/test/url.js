@@ -69,7 +69,7 @@ describe('# url', function () {
         assert.deepEqual(results.fields, parseFields(fields));
     })
 
-    it.only('should allow you to define condition using nested query instead of JSON', () => {
+    it('should allow you to define condition using nested query instead of JSON', () => {
         const condition = { operator: 'and', value: [
             { key: 'foo', operator: 'eq', value: 'bar' },
             { operator: 'or', value: [
