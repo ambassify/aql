@@ -5,7 +5,7 @@ const Parser = require('@ambassify/aql-parser');
 module.exports = {
     Parser,
     Condition,
-    filter: {
-        Memory: memoryFilter
+    Filter: {
+        memory: memoryFilter
     }
 };
