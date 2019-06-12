@@ -1,0 +1,36 @@
+{
+    "name": "@ambassify/aql-memory-filter",
+    "version": "0.0.1",
+    "description": "AQL memory filter",
+    "main": "src/index.js",
+    "engines": {
+        "node": "8"
+    },
+    "scripts": {
+        "test": "npm run test:lint && npm run test:unit",
+        "test:lint": "eslint --fix \"@(src|test)/**\"",
+        "test:unit": "nyc mocha --recursive"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ambassify/aql.git"
+    },
+    "author": "Ambassify",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/ambassify/aql/issues"
+    },
+    "homepage": "https://github.com/ambassify/aql#readme",
+    "dependencies": {
+        "lodash": "^4.17.11"
+    },
+    "devDependencies": {
+        "eslint": "^5.16.0",
+        "eslint-config-ambassify": "^1.2.0",
+        "mocha": "^6.1.2",
+        "nyc": "^13.3.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}
