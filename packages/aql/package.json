@@ -1,6 +1,6 @@
 {
     "name": "@ambassify/aql",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "AQL tools",
     "main": "index.js",
     "engines": {
