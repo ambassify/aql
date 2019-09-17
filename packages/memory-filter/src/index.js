@@ -28,11 +28,14 @@ const OPERATORS = Object.freeze({
     BETWEEN: 'between',
 
     IN: 'in',
+    NOT_IN: 'notIn',
 
     STARTS_WITH: 'startsWith',
     ENDS_WITH: 'endsWith',
     CONTAINS: 'contains',
+    NOT_CONTAINS: 'notContains',
     MATCH: 'match',
+    NOT_MATCH: 'notMatch',
 
     NONE_OF: 'noneOf',
     ANY_OF: 'anyOf',
@@ -45,6 +48,10 @@ function _lcString(str) {
 
 function _value(item, cond) {
     return _get(item, cond.key);
+}
+
+function _negate(test) {
+    return (item, cond) => !test(item, cond);
 }
 
 const tests = {
@@ -116,6 +123,10 @@ const tests = {
         return _every(cond.value, v => _includes(itemValue, v));
     },
 };
+
+tests[OPERATORS.NOT_IN] = _negate(tests[OPERATORS.IN]);
+tests[OPERATORS.NOT_CONTAINS] = _negate(tests[OPERATORS.CONTAINS]);
+tests[OPERATORS.NOT_MATCH] = _negate(tests[OPERATORS.MATCH]);
 
 function isMatch(item, condition = {}) {
     const { operator } = condition;

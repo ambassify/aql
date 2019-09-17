@@ -262,6 +262,18 @@ describe('# memory-filter', function () {
         })
     })
 
+    describe('# notIn', () => {
+        it('should pass when item value is not included in condition value', () => {
+            assert(filter.test({ foo: 1 }, { key: 'foo', operator: 'notIn', value: [ 2, 3, 4 ] }));
+            assert(filter.test({ foo: 'a' }, { key: 'foo', operator: 'notIn', value: 'bcd' }));
+        })
+
+        it('should fail when item value is included in condition value', () => {
+            assert(!filter.test({ foo: 1 }, { key: 'foo', operator: 'notIn', value: [ 1, 2, 3 ] }));
+            assert(!filter.test({ foo: 'a' }, { key: 'foo', operator: 'notIn', value: 'abc' }));
+        })
+    })
+
     describe('# startsWith', () => {
         it('should pass when item value starts with condition value', () => {
             assert(filter.test({ foo: 'bar' }, { key: 'foo', operator: 'startsWith', value: 'b' }));
@@ -310,6 +322,22 @@ describe('# memory-filter', function () {
             assert(filter.test({ foo: 'FoObAr' }, { key: 'foo', operator: 'contains', value: 'ba' }));
         })
     })
+    describe('# notContains', () => {
+        it('should pass when item value does not contain condition value', () => {
+            assert(filter.test({ foo: 'foobar' }, { key: 'foo', operator: 'notContains', value: 'bla' }));
+        })
+
+        it('should fail when item value contains condition value', () => {
+            assert(!filter.test({ foo: 'foobar' }, { key: 'foo', operator: 'notContains', value: 'oba' }));
+            assert(!filter.test({ foo: 'foobar' }, { key: 'foo', operator: 'notContains', value: 'obar' }));
+            assert(!filter.test({ foo: 'foobar' }, { key: 'foo', operator: 'notContains', value: 'foo' }));
+            assert(!filter.test({ foo: 'foobar' }, { key: 'foo', operator: 'notContains', value: 'foobar' }));
+        })
+
+        it('should be case-insensitive', () => {
+            assert(!filter.test({ foo: 'FoObAr' }, { key: 'foo', operator: 'notContains', value: 'ba' }));
+        })
+    })
 
     describe('# match', () => {
         it('should run regular expressions test against item value', () => {
@@ -324,6 +352,21 @@ describe('# memory-filter', function () {
         it('should have support for flags when condition value is an array', () => {
             assert(!filter.test({ foo: 'FoObAr' }, { key: 'foo', operator: 'match', value: '^[fobar]+$' }));
             assert(filter.test({ foo: 'FoObAr' }, { key: 'foo', operator: 'match', value: [ '^[fobar]+$', 'i' ] }));
+        })
+    })
+    describe('# notMatch', () => {
+        it('should run regular expressions test against item value', () => {
+            assert(!filter.test({ foo: 'foobar' }, { key: 'foo', operator: 'notMatch', value: '^foo' }));
+            assert(!filter.test({ foo: 'foobar' }, { key: 'foo', operator: 'notMatch', value: 'bar$' }));
+            assert(!filter.test({ foo: 'foobar' }, { key: 'foo', operator: 'notMatch', value: '^[fobar]+$' }));
+            assert(!filter.test({ foo: 'foobar' }, { key: 'foo', operator: 'notMatch', value: '\\w+' }));
+            assert(filter.test({ foo: 'foobar' }, { key: 'foo', operator: 'notMatch', value: '^bar' }));
+            assert(filter.test({ foo: 'foobar' }, { key: 'foo', operator: 'notMatch', value: '\\d+' }));
+        })
+
+        it('should have support for flags when condition value is an array', () => {
+            assert(filter.test({ foo: 'FoObAr' }, { key: 'foo', operator: 'notMatch', value: '^[fobar]+$' }));
+            assert(!filter.test({ foo: 'FoObAr' }, { key: 'foo', operator: 'notMatch', value: [ '^[fobar]+$', 'i' ] }));
         })
     })
 
