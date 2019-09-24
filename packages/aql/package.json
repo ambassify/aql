@@ -19,7 +19,8 @@
     "dependencies": {
         "@ambassify/aql-condition": "^0.1.1",
         "@ambassify/aql-memory-filter": "^0.1.4",
-        "@ambassify/aql-parser": "^0.1.1"
+        "@ambassify/aql-parser": "^0.1.1",
+        "@ambassify/aql-serializer": "^0.1.0"
     },
     "publishConfig": {
         "access": "public"
