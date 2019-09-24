@@ -1,6 +1,6 @@
 {
   "name": "@ambassify/aql-serializer",
-  "version": "0.1.0",
+  "version": "0.1.5",
   "description": "AQL serializer",
   "main": "src/index.js",
   "engines": {
@@ -21,7 +21,6 @@
     "url": "https://github.com/ambassify/aql/issues"
   },
   "homepage": "https://github.com/ambassify/aql#readme",
-  "dependencies": {},
   "devDependencies": {
     "eslint": "^5.16.0",
     "eslint-config-ambassify": "^1.2.0",
