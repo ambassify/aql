@@ -1,6 +1,6 @@
 {
     "name": "@ambassify/aql-memory-filter",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "AQL memory filter",
     "main": "src/index.js",
     "browser": "lib/index.js",
