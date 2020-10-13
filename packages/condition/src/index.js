@@ -11,11 +11,13 @@ function parse(str) {
     return normalize(condition);
 }
 
-module.exports = {
-    OPERATORS: require('./operators'),
-    parse,
-    normalize,
-    isValid: require('./validate'),
-    ...require('./builders'),
-    ...require('./iterators'),
-};
+module.exports = Object.assign(
+    {
+        OPERATORS: require('./operators'),
+        parse,
+        normalize,
+        isValid: require('./validate'),
+    },
+    require('./builders'),
+    require('./iterators')
+);
