@@ -1,4 +1,9 @@
 {
+    "parserOptions": {
+        "ecmaFeatures": {
+            "experimentalObjectRestSpread": true
+        }
+    },
     "extends": [
         "eslint-config-ambassify/mocha"
     ]
