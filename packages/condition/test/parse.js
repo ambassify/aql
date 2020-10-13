@@ -3,7 +3,7 @@
 const assert = require('assert');
 const parse = require('../src/index').parse;
 
-describe('# paese', function () {
+describe('# parse', function () {
 
     it('should expose the AQL condition parser', () => {
         const condition = { operator: 'or', value: [
