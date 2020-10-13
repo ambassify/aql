@@ -10,7 +10,8 @@ function isCondition(c) {
     if (!c || typeof c !== 'object')
         return false;
 
-    if (!c.operator)
+    // eslint-disable-next-line no-use-before-define
+    if (!c.operator || !VALIDATORS[c.operator])
         return false;
 
     return OPERATORS.KEYLESS.includes(c.operator)
