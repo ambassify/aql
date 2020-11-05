@@ -122,25 +122,25 @@ const CONSTRAINTS = {
         return comparison(escape({
             ...condition,
             value: `${escapeLike(condition.value)}%`
-        }, ctx), 'LIKE');
+        }, ctx), 'ILIKE');
     },
     [OPERATORS.ENDS_WITH](condition, ctx) {
         return comparison(escape({
             ...condition,
             value: `%${escapeLike(condition.value)}`
-        }, ctx), 'LIKE');
+        }, ctx), 'ILIKE');
     },
     [OPERATORS.CONTAINS](condition, ctx) {
         return comparison(escape({
             ...condition,
             value: `%${escapeLike(condition.value)}%`
-        }, ctx), 'LIKE');
+        }, ctx), 'ILIKE');
     },
     [OPERATORS.NOT_CONTAINS](condition, ctx) {
         return comparison(escape({
             ...condition,
             value: `%${escapeLike(condition.value)}%`
-        }, ctx), 'NOT LIKE');
+        }, ctx), 'NOT ILIKE');
     },
 
     [OPERATORS.MATCH](condition, ctx) {
