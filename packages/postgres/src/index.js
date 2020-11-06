@@ -14,118 +14,150 @@ function escapeLike(v) {
     });
 }
 
+function escapeKey(key, ctx) {
+    if (ctx && ctx.escapeKey)
+        return ctx.escapeKey(key);
+
+    return key;
+}
+
+function escapeValue(value, ctx) {
+    if (ctx && ctx.escapeValue)
+        return ctx.escapeValue(value);
+
+    return value;
+}
+
+function escapeList(list, ctx) {
+    if (ctx && ctx.escapeList)
+        return ctx.escapeList(list);
+
+    return list;
+}
+
+function escape(condition, ctx) {
+    return {
+        ...condition,
+        key: escapeKey(condition.key, ctx),
+        value: escapeValue(condition.value, ctx),
+    };
+}
+
 function comparison(condition, sqlOperator) {
     const { key, value } = condition;
     return `${key} ${sqlOperator} ${value}`;
 }
 
-function buildCondition(condition) {
+function buildCondition(condition, ctx) {
     // eslint-disable-next-line no-use-before-define
-    return CONSTRAINTS[condition.operator](condition);
+    return CONSTRAINTS[condition.operator](condition, ctx);
 }
 
 const CONSTRAINTS = {
-    [OPERATORS.AND](condition) {
+    [OPERATORS.AND](condition, ctx) {
         return condition.value
-            .map(c => buildCondition(c))
+            .map(c => buildCondition(c, ctx))
             .map(c => `(${c})`)
             .join(' AND ');
     },
-    [OPERATORS.OR](condition) {
+    [OPERATORS.OR](condition, ctx) {
         return condition.value
-            .map(c => buildCondition(c))
+            .map(c => buildCondition(c, ctx))
             .map(c => `(${c})`)
             .join(' OR ');
     },
-    [OPERATORS.NOT](condition) {
-        return `NOT(${buildCondition(condition.value)})`;
+    [OPERATORS.NOT](condition, ctx) {
+        return `NOT(${buildCondition(condition.value, ctx)})`;
     },
 
-    [OPERATORS.KNOWN](condition) {
-        return `${condition.key} IS NOT NULL`;
+    [OPERATORS.KNOWN](condition, ctx) {
+        return `${escapeKey(condition.key, ctx)} IS NOT NULL`;
     },
-    [OPERATORS.UNKNOWN](condition) {
-        return `${condition.key} IS NULL`;
-    },
-
-    [OPERATORS.EQ](condition) {
-        return comparison(condition, '=');
-    },
-    [OPERATORS.NEQ](condition) {
-        return comparison(condition, '<>');
+    [OPERATORS.UNKNOWN](condition, ctx) {
+        return `${escapeKey(condition.key, ctx)} IS NULL`;
     },
 
-    [OPERATORS.GT](condition) {
-        return comparison(condition, '>');
+    [OPERATORS.EQ](condition, ctx) {
+        return comparison(escape(condition, ctx), '=');
     },
-    [OPERATORS.GTE](condition) {
-        return comparison(condition, '>=');
-    },
-    [OPERATORS.LT](condition) {
-        return comparison(condition, '<');
-    },
-    [OPERATORS.LTE](condition) {
-        return comparison(condition, '<=');
+    [OPERATORS.NEQ](condition, ctx) {
+        return comparison(escape(condition, ctx), '<>');
     },
 
-    [OPERATORS.BETWEEN](condition) {
-        const { key, value } = condition;
-        return `${key} BETWEEN ${value[0]} AND ${value[1]}`;
+    [OPERATORS.GT](condition, ctx) {
+        return comparison(escape(condition, ctx), '>');
+    },
+    [OPERATORS.GTE](condition, ctx) {
+        return comparison(escape(condition, ctx), '>=');
+    },
+    [OPERATORS.LT](condition, ctx) {
+        return comparison(escape(condition, ctx), '<');
+    },
+    [OPERATORS.LTE](condition, ctx) {
+        return comparison(escape(condition, ctx), '<=');
     },
 
-    [OPERATORS.IN](condition) {
+    [OPERATORS.BETWEEN](condition, ctx) {
+        const key = escapeKey(condition.key, ctx);
+        const v1 = escapeValue(condition.value[0], ctx);
+        const v2 = escapeValue(condition.value[1], ctx);
+
+        return `${key} BETWEEN ${v1} AND ${v2}`;
+    },
+
+    [OPERATORS.IN](condition, ctx) {
         return comparison({
-            ...condition,
-            value: `(${condition.value.join(',')})`
+            key: escapeKey(condition.key, ctx),
+            value: `(${escapeList(condition.value, ctx)})`
         }, 'IN');
     },
-    [OPERATORS.NOT_IN](condition) {
+    [OPERATORS.NOT_IN](condition, ctx) {
         return comparison({
-            ...condition,
-            value: `(${condition.value.join(',')})`
+            key: escapeKey(condition.key, ctx),
+            value: `(${escapeList(condition.value, ctx)})`
         }, 'NOT IN');
     },
 
-    [OPERATORS.STARTS_WITH](condition) {
-        return comparison({
+    [OPERATORS.STARTS_WITH](condition, ctx) {
+        return comparison(escape({
             ...condition,
-            value: escapeLike(condition.value) + '%'
-        }, 'LIKE');
+            value: `${escapeLike(condition.value)}%`
+        }, ctx), 'LIKE');
     },
-    [OPERATORS.ENDS_WITH](condition) {
-        return comparison({
+    [OPERATORS.ENDS_WITH](condition, ctx) {
+        return comparison(escape({
             ...condition,
-            value: '%' + escapeLike(condition.value)
-        }, 'LIKE');
+            value: `%${escapeLike(condition.value)}`
+        }, ctx), 'LIKE');
     },
-    [OPERATORS.CONTAINS](condition) {
-        return comparison({
+    [OPERATORS.CONTAINS](condition, ctx) {
+        return comparison(escape({
             ...condition,
-            value: '%' + escapeLike(condition.value) + '%'
-        }, 'LIKE');
+            value: `%${escapeLike(condition.value)}%`
+        }, ctx), 'LIKE');
     },
-    [OPERATORS.NOT_CONTAINS](condition) {
-        return comparison({
+    [OPERATORS.NOT_CONTAINS](condition, ctx) {
+        return comparison(escape({
             ...condition,
-            value: '%' + escapeLike(condition.value) + '%'
-        }, 'NOT LIKE');
+            value: `%${escapeLike(condition.value)}%`
+        }, ctx), 'NOT LIKE');
     },
 
-    [OPERATORS.MATCH](condition) {
-        return comparison(condition, '~*');
+    [OPERATORS.MATCH](condition, ctx) {
+        return comparison(escape(condition, ctx), '~*');
     },
-    [OPERATORS.NOT_MATCH](condition) {
-        return comparison(condition, '!~*');
+    [OPERATORS.NOT_MATCH](condition, ctx) {
+        return comparison(escape(condition, ctx), '!~*');
     },
 
-    [OPERATORS.NONE_OF](condition) {
-        return `NOT(${comparison(condition, '&&')})`;
+    [OPERATORS.NONE_OF](condition, ctx) {
+        return `NOT(${comparison(escape(condition, ctx), '&&')})`;
     },
-    [OPERATORS.ANY_OF](condition) {
-        return comparison(condition, '&&');
+    [OPERATORS.ANY_OF](condition, ctx) {
+        return comparison(escape(condition, ctx), '&&');
     },
-    [OPERATORS.ALL_OF](condition) {
-        return comparison(condition, '@>');
+    [OPERATORS.ALL_OF](condition, ctx) {
+        return comparison(escape(condition, ctx), '@>');
     },
 };
 
