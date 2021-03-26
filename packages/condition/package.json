@@ -34,6 +34,7 @@
         "@babel/preset-env": "^7.6.2",
         "eslint": "^5.16.0",
         "eslint-config-ambassify": "^1.2.0",
+        "lodash": "^4.17.21",
         "mocha": "^6.1.2",
         "npm-build-tools": "^2.2.5",
         "nyc": "^13.3.0"

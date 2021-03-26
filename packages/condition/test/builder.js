@@ -1,9 +1,22 @@
 'use strict';
 
 const assert = require('assert');
+const { camelCase } = require('lodash');
 const Condition = require('../src/index');
 
-describe('# condition', function () {
+
+describe('# builder', function () {
+
+    it('should expose a method for every operator', () => {
+        const ALL_OPERATORS = Object
+            .keys(Condition.OPERATORS)
+            .filter(k => k !== 'KEYLESS')
+            .map(k => camelCase(k));
+
+        ALL_OPERATORS.forEach(op => {
+            assert(typeof Condition[op] === 'function', `${op} builder is defined`);
+        });
+    })
 
     it('.and should combine multiple conditions with `and` operator', () => {
         const a = { key: 'foo', operator: 'eq', value: 1 };
@@ -53,5 +66,15 @@ describe('# condition', function () {
 
         assert.deepEqual(Condition.not(a), b);
         assert.deepEqual(Condition.not(b), a);
+    });
+
+    it('.known should create a valueless condition', () => {
+        const a = { key: 'foo', operator: 'known' };
+        assert.deepEqual(Condition.known('foo'), a);
+    });
+
+    it('.eq should create a full condition', () => {
+        const a = { key: 'foo', operator: 'eq', value: 'bar' };
+        assert.deepEqual(Condition.eq('foo', 'bar'), a);
     });
 });
