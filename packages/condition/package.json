@@ -1,6 +1,6 @@
 {
     "name": "@ambassify/aql-condition",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "description": "AQL condition tool",
     "main": "src/index.js",
     "browser": "lib/index.js",
