@@ -46,27 +46,20 @@ function _lcString(str) {
     return String(str || '').toLowerCase();
 }
 
-function _value(item, cond) {
-    return _get(item, cond.key);
+function _negate(test) {
+    return (v, cond) => !test(v, cond);
 }
 
-function _negate(test) {
-    return (item, cond) => !test(item, cond);
+function _defaultMapValues(input, key, cb) {
+    return cb(_get(input, key));
 }
 
 const tests = {
-    /* eslint-disable no-use-before-define */
-    [OPERATORS.AND]: (item, cond) => _every(cond.value, c => isMatch(item, c)),
-    [OPERATORS.OR]: (item, cond) => _some(cond.value, c => isMatch(item, c)),
-    [OPERATORS.NOT]: (item, cond) => !isMatch(item, cond.value),
-    /* eslint-enable no-use-before-define */
+    [OPERATORS.UNKNOWN]: (v) => _isNil(v),
+    [OPERATORS.KNOWN]: (v) => !tests[OPERATORS.UNKNOWN](v),
 
-    [OPERATORS.UNKNOWN]: (item, cond) => _isNil(_value(item, cond)),
-    [OPERATORS.KNOWN]: (item, cond) => !tests[OPERATORS.UNKNOWN](item, cond),
-
-    [OPERATORS.EQ]: (item, cond) => {
+    [OPERATORS.EQ]: (b, cond) => {
         let a = cond.value;
-        let b = _value(item, cond);
 
         if (typeof a === 'string') {
             a = _lcString(a);
@@ -75,51 +68,47 @@ const tests = {
 
         return _isEqual(a, b);
     },
-    [OPERATORS.NEQ]: (item, cond) => !tests[OPERATORS.EQ](item, cond),
+    [OPERATORS.NEQ]: (v, cond) => !tests[OPERATORS.EQ](v, cond),
 
-    [OPERATORS.GT]: (item, cond) => _value(item, cond) > cond.value,
-    [OPERATORS.GTE]: (item, cond) => _value(item, cond) >= cond.value,
-    [OPERATORS.LT]: (item, cond) => _value(item, cond) < cond.value,
-    [OPERATORS.LTE]: (item, cond) => _value(item, cond) <= cond.value,
+    [OPERATORS.GT]: (v, cond) => v > cond.value,
+    [OPERATORS.GTE]: (v, cond) => v >= cond.value,
+    [OPERATORS.LT]: (v, cond) => v < cond.value,
+    [OPERATORS.LTE]: (v, cond) => v <= cond.value,
 
-    [OPERATORS.BETWEEN]: (item, cond) => (
-        _value(item, cond) >= cond.value[0] &&
-        _value(item, cond) <= cond.value[1]
+    [OPERATORS.BETWEEN]: (v, cond) => (
+        v >= cond.value[0] &&
+        v <= cond.value[1]
     ),
 
-    [OPERATORS.IN]: (item, cond) => _includes(cond.value, _value(item, cond)),
+    [OPERATORS.IN]: (v, cond) => _includes(cond.value, v),
 
-    [OPERATORS.STARTS_WITH]: (item, cond) => {
-        const subject = _lcString(_value(item, cond));
+    [OPERATORS.STARTS_WITH]: (v, cond) => {
+        const subject = _lcString(v);
         const needle = _lcString(cond.value);
         return subject.indexOf(needle) === 0;
     },
-    [OPERATORS.ENDS_WITH]: (item, cond) => {
-        const subject = _lcString(_value(item, cond));
+    [OPERATORS.ENDS_WITH]: (v, cond) => {
+        const subject = _lcString(v);
         const needle = _lcString(cond.value);
         return subject.indexOf(needle) === subject.length - needle.length;
     },
-    [OPERATORS.CONTAINS]: (item, cond) => {
-        const subject = _lcString(_value(item, cond));
+    [OPERATORS.CONTAINS]: (v, cond) => {
+        const subject = _lcString(v);
         const needle = _lcString(cond.value);
         return subject.indexOf(needle) > -1;
     },
-    [OPERATORS.MATCH]: (item, cond) => {
-        const itemValue = _value(item, cond);
+    [OPERATORS.MATCH]: (itemValue, cond) => {
         const [ regex, flags ] = [].concat(cond.value || []);
         return (new RegExp(regex, flags)).test(itemValue);
     },
 
-    [OPERATORS.NONE_OF]: (item, cond) => {
-        const itemValue = _value(item, cond);
+    [OPERATORS.NONE_OF]: (itemValue, cond) => {
         return _every(cond.value, v => !_includes(itemValue, v));
     },
-    [OPERATORS.ANY_OF]: (item, cond) => {
-        const itemValue = _value(item, cond);
+    [OPERATORS.ANY_OF]: (itemValue, cond) => {
         return _some(cond.value, v => _includes(itemValue, v));
     },
-    [OPERATORS.ALL_OF]: (item, cond) => {
-        const itemValue = _value(item, cond);
+    [OPERATORS.ALL_OF]: (itemValue, cond) => {
         return _every(cond.value, v => _includes(itemValue, v));
     },
 };
@@ -128,18 +117,31 @@ tests[OPERATORS.NOT_IN] = _negate(tests[OPERATORS.IN]);
 tests[OPERATORS.NOT_CONTAINS] = _negate(tests[OPERATORS.CONTAINS]);
 tests[OPERATORS.NOT_MATCH] = _negate(tests[OPERATORS.MATCH]);
 
-function isMatch(item, condition = {}) {
+function isMatch(item, condition = {}, options = {}) {
     const { operator } = condition;
 
     if (!operator)
         return true;
+
+    const {
+        mapValues = _defaultMapValues,
+    } = options;
+
+    if (operator == OPERATORS.AND)
+        return _every(condition.value, c => isMatch(item, c, options));
+
+    if (operator == OPERATORS.OR)
+        return _some(condition.value, c => isMatch(item, c, options));
+
+    if (operator == OPERATORS.NOT)
+        return !isMatch(item, condition.value, options);
 
     const test = tests[operator];
 
     if (!test)
         throw new Error(`Invalid condition. Unknown operator: "${operator}"`);
 
-    return test(item, condition);
+    return mapValues(item, condition.key, (v) => test(v, condition));
 }
 
 
