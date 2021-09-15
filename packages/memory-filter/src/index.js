@@ -50,8 +50,8 @@ function _negate(test) {
     return (v, cond) => !test(v, cond);
 }
 
-function _defaultMapValues(input, key, cb) {
-    return cb(_get(input, key));
+function _defaultMapValues(input, condition, cb) {
+    return cb(_get(input, condition.key));
 }
 
 const tests = {
@@ -124,7 +124,7 @@ function isMatch(item, condition = {}, options = {}) {
         return true;
 
     const {
-        mapValues = _defaultMapValues,
+        mapTest = _defaultMapValues,
     } = options;
 
     if (operator == OPERATORS.AND)
@@ -141,7 +141,7 @@ function isMatch(item, condition = {}, options = {}) {
     if (!test)
         throw new Error(`Invalid condition. Unknown operator: "${operator}"`);
 
-    return mapValues(item, condition.key, (v) => test(v, condition));
+    return mapTest(item, condition, (v) => test(v, condition));
 }
 
 

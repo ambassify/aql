@@ -412,11 +412,13 @@ describe('# memory-filter', function () {
         })
     })
 
-    describe('# mapValues', () => {
+    describe('# mapTest', () => {
 
-        it ('should be able to handle custom mapValues', () => {
+        it ('should be able to handle custom mapTest', () => {
 
-            const propertyMapper = (input, key, cb) => {
+            const propertyMapper = (input, condition, cb) => {
+                const { key } = condition;
+
                 if (/^prop\./.test(key)) {
                     const prop = key.replace(/^prop\./, '');
 
@@ -440,7 +442,7 @@ describe('# memory-filter', function () {
                     { key: 'email', value: 'john.doe2@gmail.com' },
                 ],
             };
-            const options = { mapValues: propertyMapper };
+            const options = { mapTest: propertyMapper };
 
             assert(filter.test(item, {
                 key: 'id',
