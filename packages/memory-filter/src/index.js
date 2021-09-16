@@ -50,7 +50,7 @@ function _negate(test) {
     return (v, cond) => !test(v, cond);
 }
 
-function _defaultMapValues(input, condition, cb) {
+function _defaultMapTest(input, condition, cb) {
     return cb(_get(input, condition.key));
 }
 
