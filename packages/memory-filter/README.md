@@ -41,3 +41,44 @@ const ok = aqlFilter.test(dataset[1], condition);
 // test will return `false`
 const notOk = aqlFilter.test(dataset[0], condition);
 ```
+
+### Value retrieval
+
+It is possible to customize how values are retrieved and the semantics
+of matching them using the `mapTest`.
+
+`mapTest` will receive items from the `dataset` one by one, the condition, and a callback.
+`mapTest` passes all values it finds for the condition to the callback, which
+will in turn return whether or not the `item` matches the condition.
+
+The default implementation looks like the code below and will simply retrieve the value
+at the `key` property and test it.
+```js
+function _defaultMapTest(input, condition, cb) {
+    return cb(_get(input, condition.key));
+}
+
+aqlFilter(dataset, condition, { mapTest: _defaultMapTest });
+```
+
+A different implementation might want to check an array of properties and mandate 
+that at least one matches.
+```js
+const propertyMapper = (input, condition, cb) => {
+    const { key } = condition;
+
+    if (/^prop\./.test(key)) {
+        const prop = key.replace(/^prop\./, '');
+
+        return input.properties.reduce((r, p) => {
+            if (p.key == prop)
+                return r || cb(p.value);
+            return r;
+        }, false);
+    }
+
+    return cb(input[key]);
+};
+
+aqlFilter(dataset, condition, { mapTest: propertyMapper });
+```
