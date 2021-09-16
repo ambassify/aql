@@ -412,4 +412,63 @@ describe('# memory-filter', function () {
         })
     })
 
+    describe('# mapTest', () => {
+
+        it ('should be able to handle custom mapTest', () => {
+
+            const propertyMapper = (input, condition, cb) => {
+                const { key } = condition;
+
+                if (/^prop\./.test(key)) {
+                    const prop = key.replace(/^prop\./, '');
+
+                    return input.properties.reduce((r, p) => {
+                        if (p.key == prop)
+                            return r || cb(p.value);
+                        return r;
+                    }, false);
+                }
+
+                return cb(input[key]);
+            };
+
+            const item = {
+                id: 'uid-123',
+                role: 'manager',
+                properties: [
+                    { key: 'givenName', value: 'John' },
+                    { key: 'familyName', value: 'Doe' },
+                    { key: 'email', value: 'john.doe@gmail.com' },
+                    { key: 'email', value: 'john.doe2@gmail.com' },
+                ],
+            };
+            const options = { mapTest: propertyMapper };
+
+            assert(filter.test(item, {
+                key: 'id',
+                operator: 'eq',
+                value: 'uid-123',
+            }, options));
+
+            assert(filter.test(item, {
+                key: 'prop.givenName',
+                operator: 'contains',
+                value: 'ohn',
+            }, options));
+
+            assert(filter.test(item, {
+                key: 'prop.email',
+                operator: 'eq',
+                value: 'john.doe2@gmail.com',
+            }, options));
+
+            assert(!filter.test(item, {
+                key: 'prop.email',
+                operator: 'contains',
+                value: 'paul',
+            }, options));
+
+        })
+    })
+
 });
