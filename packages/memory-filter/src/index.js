@@ -145,8 +145,8 @@ function isMatch(item, condition = {}, options = {}) {
 }
 
 
-function memoryFilter(dataset, condition = {}) {
-    return _filter(dataset, item => isMatch(item, condition));
+function memoryFilter(dataset, condition = {}, options = {}) {
+    return _filter(dataset, item => isMatch(item, condition, options));
 }
 
 module.exports = memoryFilter;
