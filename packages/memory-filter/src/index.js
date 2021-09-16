@@ -124,7 +124,7 @@ function isMatch(item, condition = {}, options = {}) {
         return true;
 
     const {
-        mapTest = _defaultMapValues,
+        mapTest = _defaultMapTest,
     } = options;
 
     if (operator == OPERATORS.AND)
