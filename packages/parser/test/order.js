@@ -3,7 +3,7 @@
 const assert = require('assert');
 const parseOrder = require('../src/order');
 
-describe('# order', function () {
+describe('# order', function() {
 
     it('should export ASC constant', () => {
         assert.equal(parseOrder.ASC, 'asc');

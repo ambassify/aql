@@ -5,7 +5,7 @@ const { camelCase } = require('lodash');
 const Condition = require('../src/index');
 
 
-describe('# builder', function () {
+describe('# builder', function() {
 
     it('should expose a method for every operator', () => {
         const ALL_OPERATORS = Object

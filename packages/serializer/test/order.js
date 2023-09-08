@@ -3,7 +3,7 @@
 const assert = require('assert');
 const serializeOrder = require('../src/order');
 
-describe('# order', function () {
+describe('# order', function() {
 
     it('should export ASC constant', () => {
         assert.equal(serializeOrder.ASC, 'asc');
@@ -41,7 +41,7 @@ describe('# order', function () {
         assert.equal(serializeOrder(false), undefined);
         assert.equal(serializeOrder(''), undefined);
         assert.equal(serializeOrder([]), undefined);
-        assert.equal(serializeOrder([ { foo: 1 }]), undefined);
+        assert.equal(serializeOrder([ { foo: 1 } ]), undefined);
     });
 
 });

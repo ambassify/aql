@@ -3,7 +3,7 @@
 const assert = require('assert');
 const normalize = require('../src/index').normalize;
 
-describe('# normalize', function () {
+describe('# normalize', function() {
 
     it('should filter out conditions that are always true (~= empty conditions)', () => {
         assert.equal(normalize(), null);

@@ -3,7 +3,7 @@
 const assert = require('assert');
 const filter = require('../src/index').filter;
 
-describe('# filter', function () {
+describe('# filter', function() {
 
     it('should recursively filter a condition based on a predicate', () => {
         const predicate = c => c.key === 'foo';

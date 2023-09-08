@@ -6,7 +6,7 @@ const parseUrl = require('../src/url');
 const parseFields = require('../src/fields');
 const parseOrder = require('../src/order');
 
-describe('# url', function () {
+describe('# url', function() {
 
     it('should throw an error when invalid input is passed', () => {
         assert.throws(() => parseUrl(true));

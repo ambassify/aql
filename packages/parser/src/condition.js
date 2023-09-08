@@ -1,8 +1,7 @@
 'use strict';
 
 function json(str) {
-    try { return JSON.parse(str); }
-    catch(err) { return null; }
+    try { return JSON.parse(str); } catch (err) { return null; }
 }
 
 function isCondition(c) {

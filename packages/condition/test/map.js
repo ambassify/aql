@@ -4,7 +4,7 @@ const assert = require('assert');
 const map = require('../src/index').map;
 const pMap = require('../src/index').pMap;
 
-describe('# map', function () {
+describe('# map', function() {
 
     it('should recursively map a condition based on a predicate', () => {
         const predicate = c => c.key ? ({ ...c, key: 'bar' }) : c;
@@ -24,7 +24,7 @@ describe('# map', function () {
         assert.deepEqual(map(condition, predicate), mapped);
     });
 
-    describe('# pMap', function () {
+    describe('# pMap', function() {
 
         it('should recursively map a condition based on a predicate that returns a promise', async () => {
             const predicate = c => Promise.resolve(c.key ? ({ ...c, key: 'bar' }) : c);

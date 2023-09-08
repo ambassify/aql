@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = Object.freeze({
-    KEYLESS: ['and', 'or', 'not'],
+    KEYLESS: [ 'and', 'or', 'not' ],
     AND: 'and',
     OR: 'or',
     NOT: 'not',

@@ -5,12 +5,12 @@
   "main": "src/index.js",
   "browser": "lib/index.js",
   "engines": {
-    "node": "8"
+    "node": ">= 16"
   },
   "scripts": {
     "preversion": "npm run test",
     "prepublishOnly": "npm run test && npm run build",
-    "build": "n-clean lib && babel -d lib src",
+    "build": "babel --delete-dir-on-start -d lib src",
     "test": "npm run test:lint && npm run test:unit",
     "test:lint": "eslint --fix \"@(src|test)/**\"",
     "test:unit": "nyc mocha --recursive"
@@ -30,10 +30,9 @@
     "@babel/core": "^7.6.2",
     "@babel/preset-env": "^7.6.2",
     "eslint": "^5.16.0",
-    "eslint-config-ambassify": "^1.2.0",
-    "mocha": "^6.1.2",
-    "npm-build-tools": "^2.2.5",
-    "nyc": "^13.3.0"
+    "eslint-config-ambassify": "^3.0.1",
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0"
   },
   "publishConfig": {
     "access": "public"

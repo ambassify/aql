@@ -3,7 +3,7 @@
 const assert = require('assert');
 const filter = require('../src/index');
 
-describe('# memory-filter', function () {
+describe('# memory-filter', function() {
 
     it('should throw error when unknown operators are used', () => {
         assert.throws(() => filter([ 1 ], { operator: 'foo' }));
@@ -144,8 +144,8 @@ describe('# memory-filter', function () {
             assert(!filter.test({ foo: 'bar' }, { key: 'foo', operator: 'neq', value: 'bar' }));
             assert(filter.test({ foo: [ 'bar', 'baz' ] }, { key: 'foo', operator: 'eq', value: [ 'bar', 'baz' ] }));
             assert(!filter.test({ foo: [ 'bar', 'baz' ] }, { key: 'foo', operator: 'neq', value: [ 'bar', 'baz' ] }));
-            assert(filter.test({ foo: { bar: 'baz'} }, { key: 'foo', operator: 'eq', value: { bar: 'baz'} }));
-            assert(!filter.test({ foo: { bar: 'baz'} }, { key: 'foo', operator: 'neq', value: { bar: 'baz'} }));
+            assert(filter.test({ foo: { bar: 'baz' } }, { key: 'foo', operator: 'eq', value: { bar: 'baz' } }));
+            assert(!filter.test({ foo: { bar: 'baz' } }, { key: 'foo', operator: 'neq', value: { bar: 'baz' } }));
         })
 
         it('should be case-insensitive when condition value is a string', () => {
@@ -227,11 +227,11 @@ describe('# memory-filter', function () {
         })
 
         it('should work with strings (lexical compare)', () => {
-            assert(!filter.test({ foo: 'a' }, { key: 'foo', operator: 'between', value: ['b', 'd'] }));
-            assert(filter.test({ foo: 'b' }, { key: 'foo', operator: 'between', value: ['b', 'd'] }));
-            assert(filter.test({ foo: 'c' }, { key: 'foo', operator: 'between', value: ['b', 'd'] }));
-            assert(filter.test({ foo: 'd' }, { key: 'foo', operator: 'between', value: ['b', 'd'] }));
-            assert(!filter.test({ foo: 'e' }, { key: 'foo', operator: 'between', value: ['b', 'd'] }));
+            assert(!filter.test({ foo: 'a' }, { key: 'foo', operator: 'between', value: [ 'b', 'd' ] }));
+            assert(filter.test({ foo: 'b' }, { key: 'foo', operator: 'between', value: [ 'b', 'd' ] }));
+            assert(filter.test({ foo: 'c' }, { key: 'foo', operator: 'between', value: [ 'b', 'd' ] }));
+            assert(filter.test({ foo: 'd' }, { key: 'foo', operator: 'between', value: [ 'b', 'd' ] }));
+            assert(!filter.test({ foo: 'e' }, { key: 'foo', operator: 'between', value: [ 'b', 'd' ] }));
         })
 
         it('should work with dates', () => {
@@ -242,11 +242,11 @@ describe('# memory-filter', function () {
             const d = new Date(now + 1);
             const e = new Date(now + 2);
 
-            assert(!filter.test({ foo: a }, { key: 'foo', operator: 'between', value: [b, d] }));
-            assert(filter.test({ foo: b }, { key: 'foo', operator: 'between', value: [b, d] }));
-            assert(filter.test({ foo: c }, { key: 'foo', operator: 'between', value: [b, d] }));
-            assert(filter.test({ foo: d }, { key: 'foo', operator: 'between', value: [b, d] }));
-            assert(!filter.test({ foo: e }, { key: 'foo', operator: 'between', value: [b, d] }));
+            assert(!filter.test({ foo: a }, { key: 'foo', operator: 'between', value: [ b, d ] }));
+            assert(filter.test({ foo: b }, { key: 'foo', operator: 'between', value: [ b, d ] }));
+            assert(filter.test({ foo: c }, { key: 'foo', operator: 'between', value: [ b, d ] }));
+            assert(filter.test({ foo: d }, { key: 'foo', operator: 'between', value: [ b, d ] }));
+            assert(!filter.test({ foo: e }, { key: 'foo', operator: 'between', value: [ b, d ] }));
         })
     })
 

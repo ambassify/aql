@@ -3,7 +3,7 @@
 const assert = require('assert');
 const serializeFields = require('../src/fields');
 
-describe('# fields', function () {
+describe('# fields', function() {
 
     it('should be able to serialize simple field objects', () => {
         assert.equal(serializeFields({

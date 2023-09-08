@@ -1,13 +1,8 @@
 {
-    "parserOptions": {
-        "ecmaFeatures": {
-            "experimentalObjectRestSpread": true
-        }
-    },
     "extends": [
         "eslint-config-ambassify/mocha"
     ],
     "rules": {
-        "node/no-unpublished-require": [ 0 ]
+        "n/no-unpublished-require": [ 0 ]
     }
 }

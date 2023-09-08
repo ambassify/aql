@@ -3,7 +3,7 @@
 const assert = require('assert');
 const parseFields = require('../src/fields');
 
-describe('# fields', function () {
+describe('# fields', function() {
 
     it('should be able to parse simple field strings', () => {
         assert.deepEqual(parseFields('foo,bar,baz'), {

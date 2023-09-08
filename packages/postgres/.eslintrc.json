@@ -3,14 +3,7 @@
     "extends": [
         "eslint-config-ambassify/node"
     ],
-    "parserOptions": {
-        "sourceType": "script",
-        "ecmaVersion": 2019
-    },
     "rules": {
-        "strict": [
-            2,
-            "global"
-        ]
+        "strict": [ "error", "global" ]
     }
 }

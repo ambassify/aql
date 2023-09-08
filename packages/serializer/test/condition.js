@@ -3,7 +3,7 @@
 const assert = require('assert');
 const serializeCondition = require('../src/condition');
 
-describe('# condition', function () {
+describe('# condition', function() {
 
     it('should leave strings alone', () => {
         assert.equal(serializeCondition('foo'), 'foo');

@@ -3,7 +3,7 @@
 const assert = require('assert');
 const parseCondition = require('../src/condition');
 
-describe('# condition', function () {
+describe('# condition', function() {
 
     it('should throw an error when invalid input is passed', () => {
         assert.throws(() => parseCondition(true));

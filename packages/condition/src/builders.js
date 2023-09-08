@@ -26,7 +26,7 @@ function createValuelessBuilder(operator) {
 
 function createBuilder(operator) {
     return function(key, value) {
-        return { key, operator, value};
+        return { key, operator, value };
     };
 }
 
