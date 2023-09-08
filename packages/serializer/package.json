@@ -1,6 +1,6 @@
 {
   "name": "@ambassify/aql-serializer",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "AQL serializer",
   "main": "src/index.js",
   "browser": "lib/index.js",
