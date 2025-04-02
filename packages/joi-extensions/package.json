@@ -1,0 +1,44 @@
+{
+  "name": "@ambassify/aql-joi-extensions",
+  "version": "0.6.1",
+  "description": "Joi extensions for AQL",
+  "main": "src/index.js",
+  "browser": "lib/index.js",
+  "engines": {
+    "node": ">= 16"
+  },
+  "scripts": {
+    "preversion": "npm run test",
+    "prepublishOnly": "npm run test && npm run build",
+    "build": "babel --delete-dir-on-start -d lib src",
+    "test": "nyc mocha --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ambassify/aql.git"
+  },
+  "author": "Ambassify",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ambassify/aql/issues"
+  },
+  "homepage": "https://github.com/ambassify/aql#readme",
+  "dependencies": {
+    "@ambassify/aql-condition": "^0.6.1",
+    "@ambassify/aql-parser": "^0.6.1"
+  },
+  "peerDependencies": {
+    "joi": ">=17"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.2",
+    "@babel/core": "^7.23.2",
+    "@babel/preset-env": "^7.23.2",
+    "joi": "^17.13.3",
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
