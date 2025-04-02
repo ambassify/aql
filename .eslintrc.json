@@ -1,0 +1,25 @@
+{
+    "root": true,
+    "extends": [
+        "eslint-config-ambassify/node"
+    ],
+    "rules": {
+        "strict": [ "error", "global" ],
+        "n/no-deprecated-api": [ "error", {
+            "ignoreModuleItems": [ "url.parse" ]
+        } ]
+    },
+    "overrides": [
+        {
+            "files": "packages/*/test/**/*.js",
+            "extends": [
+                "eslint-config-ambassify/mocha"
+            ],
+            "rules": {
+                "n/no-unpublished-require": [
+                    0
+                ]
+            }
+        }
+    ]
+}

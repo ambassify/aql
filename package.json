@@ -1,10 +1,17 @@
 {
   "name": "aql",
   "version": "0.0.1",
+  "scripts": {
+    "test": "npm run -s test:lint && npm run -s test:packages",
+    "test:lint": "eslint .",
+    "test:packages": "npm test --workspaces --if-present"
+  },
   "workspaces": [
     "packages/*"
   ],
   "devDependencies": {
+    "eslint": "^8.57.1",
+    "eslint-config-ambassify": "^4.0.2",
     "lerna": "^8.1.6"
   }
 }
