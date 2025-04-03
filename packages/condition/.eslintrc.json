@@ -1,9 +1,0 @@
-{
-    "root": true,
-    "extends": [
-        "eslint-config-ambassify/node"
-    ],
-    "rules": {
-        "strict": [ "error", "global" ]
-    }
-}
