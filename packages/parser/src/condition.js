@@ -30,3 +30,5 @@ module.exports = function parseCondition(str = '') {
 
     return;
 };
+
+module.exports.isCondition = isCondition;

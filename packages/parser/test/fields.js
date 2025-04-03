@@ -50,7 +50,6 @@ describe('# fields', function() {
 
     it('should throw an error when invalid input is passed', () => {
         assert.throws(() => parseFields(true));
-        assert.throws(() => parseFields({}));
         assert.throws(() => parseFields('foo,'));
         assert.throws(() => parseFields('foo('));
         assert.throws(() => parseFields('foo())'));

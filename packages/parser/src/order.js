@@ -3,12 +3,24 @@
 const ASC = 'asc';
 const DESC = 'desc';
 
-module.exports = function parseOrder(orderString = '') {
-    if (typeof orderString !== 'string')
+function isOrder(order) {
+    return Array.isArray(order) && order.every(o => {
+        return typeof o === 'object'
+            && typeof o.key === 'string'
+            && [ ASC, DESC ].includes(o.direction);
+    });
+}
+
+module.exports = function parseOrder(order = '') {
+    if (isOrder(order))
+        return order;
+
+    if (typeof order !== 'string')
         return [];
 
     const regex = /^([-+])?(.+)$/i;
-    return orderString
+
+    return order
         .split(',')
         .filter(s => s.length)
         .map(s => {
@@ -23,3 +35,5 @@ module.exports = function parseOrder(orderString = '') {
 
 module.exports.ASC = ASC;
 module.exports.DESC = DESC;
+
+module.exports.isOrder = isOrder;
