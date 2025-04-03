@@ -25,13 +25,13 @@ const comment = joi.object({
 });
 
 /**
- * Optionally, validate the condition's keys and value based on the schema of
- * a resource it will apply to.
+ * Optionally, validate the condition/field/order's keys and (for conditions)
+ * values based on the schema of a resource it will apply to.
  */
 const commentQueryValidation = {
-    condition: joi.aql().condition(comment),
-    fields: joi.aql().fields(),
-    order: joi.aql().order(),
+    condition: joi.aql().condition().schema(comment),
+    fields: joi.aql().fields().schema(comment),
+    order: joi.aql().order().schema(comment),
 }
 
 ```

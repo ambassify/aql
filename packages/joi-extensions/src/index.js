@@ -13,7 +13,7 @@ const LIST_OPERATORS = [
     'notIn'
 ];
 
-function validateConditionValue(condition, schema) {
+function validateConditionValue(condition, schema, createError) {
     const { key, operator, value } = condition;
 
     if (Array.isArray(value) && LIST_OPERATORS.includes(operator)) {
@@ -24,61 +24,107 @@ function validateConditionValue(condition, schema) {
 
     const result = schema.validate(value, { language: { root: key } });
 
-    if (result.error)
-        throw result.error;
+    if (result.error) {
+        throw createError('value', {
+            k: key,
+            cause: result.error.message
+        });
+    }
 
     return result.value;
 }
 
-function parseCondition(value, schema , helpers) {
-    let parsed;
+function validateConditionSchema(condition, schema, createError) {
+    try {
+        return Condition.map(condition, c => {
+            if (!c.key)
+                return c;
 
-    const createError = (code, options) => ({
-        value,
-        errors: helpers.error(code, options)
-    });
+            let keySchema = null;
+            try {
+                keySchema = schema.extract(c.key);
+            } catch (err) {
+                if (!/Schema does not contain path/i.test(err.message))
+                    throw createError('unknown', { cause: err.message });
+            }
+
+            if (!keySchema)
+                throw createError('key', { k: c.key });
+
+
+            return {
+                ...c,
+                value: validateConditionValue(c, keySchema, createError)
+            };
+        });
+    } catch (err) {
+        if (err instanceof Error)
+            return createError('unknown', { cause: err.message });
+
+        return err;
+    }
+}
+
+function getFieldsKeys(fields, prefix = '') {
+    return Object.keys(fields).flatMap(key => {
+        const value = fields[key];
+
+        if (!value)
+            return;
+
+        if (prefix)
+            key = `${prefix}.${key}`;
+
+        return typeof value === 'object'
+            ? getFieldsKeys(value, key)
+            : key;
+    }).filter(Boolean);
+}
+
+function getOrderKeys(order) {
+    return order.map(o => o.key);
+}
+
+function validateKey(key, schema, createError) {
+    let keySchema = null;
 
     try {
-        parsed = Parser.condition(value);
+        keySchema = schema.extract(key);
     } catch (err) {
-        return createError('aql.condition', { cause: err.message });
+        if (!/Schema does not contain path/i.test(err.message))
+            return createError('unknown', { cause: err.message });
     }
 
-    if (!schema)
-        return { value: parsed };
-
-    return Condition.map(parsed, c => {
-        if (!c.key)
-            return c;
-
-        let keySchema = null;
-        try {
-            keySchema = schema.extract(c.key);
-        } catch (err) {
-            if (!/Schema does not contain path/i.test(err.message))
-                return createError('aql.condition.unknown', { cause: err.message });
-        }
-
-        if (!keySchema)
-            return createError('aql.condition.key', { k: c.key });
-
-
-        try {
-            return {
-                value: {
-                    ...c,
-                    value: validateConditionValue(c, keySchema, createError)
-                }
-            };
-        } catch (err) {
-            return createError('aql.condition.value', {
-                k: c.key,
-                cause: err.message
-            });
-        }
-
-    });
+    if (!keySchema)
+        return createError('key', { k: key });
 }
+
+function createKeyValidator(extractKeys) {
+    return function validateKeys(value, schema, createError) {
+        const keys = extractKeys(value);
+
+        for (const key of keys) {
+            const error = validateKey(key, schema, createError);
+
+            if (error)
+                return error;
+        }
+
+        return value;
+    };
+}
+
+const parsers = {
+    condition: Parser.condition,// parseCondition,
+    fields: Parser.fields,// parseFields,
+    order: Parser.order,// parseOrder,
+};
+
+const schemaValidators = {
+    condition: validateConditionSchema,
+    fields: createKeyValidator(getFieldsKeys),
+    order: createKeyValidator(getOrderKeys),
+};
 
 module.exports = Joi => Joi
     .extend({
@@ -90,36 +136,32 @@ module.exports = Joi => Joi
             'aql.condition.value': '{{#label}} includes an invalid value in the AQL condition at "{{#k}}": {{#cause}}',
             'aql.condition.unknown': '{{#label}} did not validate against the AQL condition schema: {{#cause}}',
             'aql.fields': '{{#label}} must be a valid AQL fields definition: {{#cause}}',
+            'aql.fields.key': '{{#label}} includes an unknown key "{{#k}}" in the AQL fields',
+            'aql.fields.unknown': '{{#label}} did not validate against the AQL fields schema: {{#cause}}',
             'aql.order': '{{#label}} must be a valid AQL order definition: {{#cause}}',
+            'aql.order.key': '{{#label}} includes an unknown key "{{#k}}" in the AQL order',
+            'aql.order.unknown': '{{#label}} did not validate against the AQL order schema: {{#cause}}',
         },
-        prepare(value, helpers) {
-            let rule = helpers.schema.$_getRule('condition');
+        coerce(value, helpers) {
+            for (const ruleName of [ 'condition', 'fields', 'order' ]) {
+                const rule = helpers.schema.$_getRule(ruleName);
+                const parser = parsers[ruleName];
 
-            if (rule)
-                return parseCondition(value, rule.args.schema, helpers);
+                if (!rule || !parser)
+                    continue;
 
-            rule = helpers.schema.$_getRule('fields');
-
-            if (rule) {
                 try {
-                    return { value: Parser.fields(value) };
+                    const parsed = parser(value);
+
+                    // Not coerced
+                    if (parsed === value || typeof parsed === 'undefined')
+                        return;
+
+                    return { value: parsed };
                 } catch (err) {
                     return {
                         value,
-                        errors: helpers.error('aql.fields', { cause: err.message })
-                    };
-                }
-            }
-
-            rule = helpers.schema.$_getRule('order');
-
-            if (rule) {
-                try {
-                    return { value: Parser.order(value) };
-                } catch (err) {
-                    return {
-                        value,
-                        errors: helpers.error('aql.order', { cause: err.message })
+                        errors: helpers.error(`aql.${ruleName}`, { cause: err.message })
                     };
                 }
             }
@@ -127,16 +169,62 @@ module.exports = Joi => Joi
         rules: {
             'condition': {
                 convert: true,
-                method(schema) {
-                    return this.$_addRule({ name: 'condition', args: { schema } });
+                method() {
+                    return this.$_addRule('condition');
                 },
-                args: [ 'schema' ]
+                validate(value, helpers) {
+                    if (Parser.condition.isCondition(value))
+                        return value;
+
+                    return helpers.error('aql.condition', { cause: 'invalid' });
+                }
             },
             'fields': {
                 convert: true,
+                method() {
+                    return this.$_addRule('fields');
+                },
+                validate(value, helpers) {
+                    if (Parser.fields.isFields(value))
+                        return value;
+
+                    return helpers.error('aql.fields', { cause: 'invalid' });
+                }
             },
             'order': {
                 convert: true,
+                method() {
+                    return this.$_addRule('order');
+                },
+                validate(value, helpers) {
+                    if (Parser.order.isOrder(value))
+                        return value;
+
+                    return helpers.error('aql.order', { cause: 'invalid' });
+                }
             },
+            'schema': {
+                method(schema) {
+                    return this.$_addRule({ name: 'schema', args: { schema } });
+                },
+                args: [ 'schema' ],
+                validate(value, helpers, { schema }) {
+                    const ruleName = [ 'condition', 'fields', 'order' ].find(n => {
+                        return !!helpers.schema.$_getRule(n);
+                    });
+
+                    const validator = schemaValidators[ruleName];
+
+                    if (!validator || !schema)
+                        return value;
+
+                    const createError = (code, context) => {
+                        code = [ 'aql', ruleName, code ].filter(Boolean).join('.');
+                        return helpers.error(code, context);
+                    };
+
+                    return validator(value, schema, createError);
+                }
+            }
         }
     });
