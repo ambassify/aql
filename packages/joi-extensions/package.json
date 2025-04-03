@@ -1,6 +1,6 @@
 {
   "name": "@ambassify/aql-joi-extensions",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Joi extensions for AQL",
   "main": "src/index.js",
   "browser": "lib/index.js",
@@ -24,8 +24,8 @@
   },
   "homepage": "https://github.com/ambassify/aql#readme",
   "dependencies": {
-    "@ambassify/aql-condition": "^0.6.1",
-    "@ambassify/aql-parser": "^0.6.1"
+    "@ambassify/aql-condition": "^0.7.0",
+    "@ambassify/aql-parser": "^0.7.0"
   },
   "peerDependencies": {
     "joi": ">=17"
