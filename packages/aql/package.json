@@ -1,6 +1,6 @@
 {
     "name": "@ambassify/aql",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "description": "AQL tools",
     "main": "index.js",
     "engines": {
@@ -17,9 +17,9 @@
     },
     "homepage": "https://github.com/ambassify/aql#readme",
     "dependencies": {
-        "@ambassify/aql-condition": "^0.7.0",
+        "@ambassify/aql-condition": "^0.7.1",
         "@ambassify/aql-memory-filter": "^0.7.0",
-        "@ambassify/aql-parser": "^0.7.0",
+        "@ambassify/aql-parser": "^0.7.1",
         "@ambassify/aql-serializer": "^0.7.0"
     },
     "publishConfig": {
