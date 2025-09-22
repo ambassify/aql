@@ -1,0 +1,11 @@
+17 error Error: Command failed with exit code 128: git rev-list --left-right --count origin/feat/joi-ext...feat/joi-ext
+17 error fatal: ambiguous argument 'origin/feat/joi-ext...feat/joi-ext': unknown revision or path not in the working tree.
+17 error Use '--' to separate paths from revisions, like this:
+17 error 'git <command> [<revision>...] -- [<file>...]'
+17 error     at makeError (/Users/gert/ambassify/aql/node_modules/execa/lib/error.js:59:11)
+17 error     at module.exports.sync (/Users/gert/ambassify/aql/node_modules/execa/index.js:186:17)
+17 error     at Object.execSync (/Users/gert/ambassify/aql/node_modules/lerna/dist/index.js:1579:31)
+17 error     at countLeftRight (/Users/gert/ambassify/aql/node_modules/lerna/dist/index.js:9207:33)
+17 error     at isBehindUpstream (/Users/gert/ambassify/aql/node_modules/lerna/dist/index.js:9196:27)
+17 error     at VersionCommand.initialize (/Users/gert/ambassify/aql/node_modules/lerna/dist/index.js:9488:57)
+17 error     at VersionCommand.runCommand (/Users/gert/ambassify/aql/node_modules/lerna/dist/index.js:3297:36)
