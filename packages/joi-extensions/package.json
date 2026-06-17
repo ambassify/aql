@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.6.2",
-    "@babel/core": "^7.23.2",
+    "@babel/core": "^7.29.6",
     "@babel/preset-env": "^7.23.2",
     "joi": "^17.13.3",
     "mocha": "^10.2.0",
