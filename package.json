@@ -6,6 +6,10 @@
     "test:lint": "eslint .",
     "test:packages": "npm test --workspaces --if-present"
   },
+  "overrides": {
+    "form-data@^4.0.0": "^4.0.6",
+    "tmp@^0.2.0": "^0.2.7"
+  },
   "workspaces": [
     "packages/*"
   ],
