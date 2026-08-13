@@ -15,7 +15,6 @@
   ],
   "devDependencies": {
     "eslint": "^8.57.1",
-    "eslint-config-ambassify": "^4.0.2",
-    "lerna": "^9.0.3"
+    "eslint-config-ambassify": "^4.0.2"
   }
 }
