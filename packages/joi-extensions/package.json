@@ -1,6 +1,6 @@
 {
   "name": "@ambassify/aql-joi-extensions",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Joi extensions for AQL",
   "main": "src/index.js",
   "browser": "lib/index.js",
