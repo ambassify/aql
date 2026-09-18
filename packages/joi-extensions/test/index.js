@@ -149,6 +149,83 @@ describe('# joi-extensions', function() {
             assert.deepEqual(result.value, expected);
         });
 
+        it('should resolve a key against a regex pattern', () => {
+            const input = JSON.stringify({ key: 'x_a', operator: 'eq', value: 1 });
+            const expected = JSON.parse(input);
+            const schema = Joi.object().pattern(/^x_/, Joi.number());
+            const result = Joi.aql().condition().schema(schema).validate(input);
+
+            assert(!result.error, 'no error');
+            assert.deepEqual(result.value, expected);
+        });
+
+        it('should validate the value against the matched pattern rule', () => {
+            const input = JSON.stringify({ key: 'x_a', operator: 'eq', value: 'nope' });
+            const expected = JSON.parse(input);
+            const schema = Joi.object().pattern(/^x_/, Joi.number());
+            const result = Joi.aql().condition().schema(schema).validate(input);
+
+            assert(result.error instanceof Error, 'Validation error returned');
+            assert.equal(result.error?.details?.at(0)?.type, 'aql.condition.value');
+            assert.deepEqual(result.value, expected);
+        });
+
+        it('should emit an aql.condition.key error for a key matching no pattern', () => {
+            const input = JSON.stringify({ key: 'foo', operator: 'eq', value: 1 });
+            const expected = JSON.parse(input);
+            const schema = Joi.object().pattern(/^x_/, Joi.number());
+            const result = Joi.aql().condition().schema(schema).validate(input);
+
+            assert(result.error instanceof Error, 'Validation error returned');
+            assert.equal(result.error?.details?.at(0)?.type, 'aql.condition.key');
+            assert.deepEqual(result.value, expected);
+        });
+
+        it('should resolve a key against a schema pattern', () => {
+            const input = JSON.stringify({ key: 'long', operator: 'eq', value: 1 });
+            const expected = JSON.parse(input);
+            const schema = Joi.object().pattern(Joi.string().min(3), Joi.number());
+            const result = Joi.aql().condition().schema(schema).validate(input);
+
+            assert(!result.error, 'no error');
+            assert.deepEqual(result.value, expected);
+        });
+
+        it('should resolve a nested key against a pattern', () => {
+            const input = JSON.stringify({ key: 'meta.x_a', operator: 'eq', value: 'str' });
+            const expected = JSON.parse(input);
+            const schema = Joi.object({
+                meta: Joi.object().pattern(/^x_/, Joi.string())
+            });
+            const result = Joi.aql().condition().schema(schema).validate(input);
+
+            assert(!result.error, 'no error');
+            assert.deepEqual(result.value, expected);
+        });
+
+        it('should prefer a declared key over a matching pattern', () => {
+            const input = JSON.stringify({ key: 'x_a', operator: 'eq', value: 'str' });
+            const expected = JSON.parse(input);
+            const schema = Joi.object({ x_a: Joi.string() }).pattern(/^x_/, Joi.number());
+            const result = Joi.aql().condition().schema(schema).validate(input);
+
+            assert(!result.error, 'no error');
+            assert.deepEqual(result.value, expected);
+        });
+
+        it('should combine the rules of fallthrough patterns', () => {
+            const input = JSON.stringify({ key: 'x_a', operator: 'eq', value: 5 });
+            const expected = JSON.parse(input);
+            const schema = Joi.object()
+                .pattern(/^x_/, Joi.number(), { fallthrough: true })
+                .pattern(/a$/, Joi.number().max(3));
+            const result = Joi.aql().condition().schema(schema).validate(input);
+
+            assert(result.error instanceof Error, 'Validation error returned');
+            assert.equal(result.error?.details?.at(0)?.type, 'aql.condition.value');
+            assert.deepEqual(result.value, expected);
+        });
+
         it('should still validate values of known keys in an unknown-allowing schema', () => {
             const input = JSON.stringify({ key: 'bar', operator: 'eq', value: 1 });
             const expected = JSON.parse(input);

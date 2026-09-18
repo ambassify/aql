@@ -26,6 +26,39 @@ function allowsUnknownKeys(schema) {
 }
 
 /**
+ * @returns {object|null} rule of the pattern matching `key`, all of them
+ *                        combined on fallthrough, null when none match
+ */
+function matchPatternSchema(schema, key) {
+    const patterns = schema.$_terms.patterns;
+
+    if (!patterns)
+        return null;
+
+    const rules = [];
+
+    for (const pattern of patterns) {
+        const matched = pattern.regex ?
+            pattern.regex.test(key) :
+            !pattern.schema.validate(key).error;
+
+        if (!matched)
+            continue;
+
+        rules.push(pattern.rule);
+
+        // A fallthrough pattern lets later patterns apply to the same key too
+        if (!pattern.fallthrough)
+            break;
+    }
+
+    if (rules.length < 2)
+        return rules[0] || null;
+
+    return schema.$_root.alternatives().try(...rules).match('all');
+}
+
+/**
  * @returns {object|null} schema for `key`, `any` when it falls under an object
  *                        that allows unknown keys, null when it is not allowed
  */
@@ -42,6 +75,8 @@ function resolveKeySchema(schema, key) {
             if (!/Schema does not contain path/i.test(err.message))
                 throw err;
         }
+
+        next = next || matchPatternSchema(current, segment);
 
         if (!next)
             return allowsUnknownKeys(current) ? current.$_root.any() : null;
