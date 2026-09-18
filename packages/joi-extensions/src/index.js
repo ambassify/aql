@@ -13,6 +13,45 @@ const LIST_OPERATORS = [
     'notIn'
 ];
 
+function allowsUnknownKeys(schema) {
+    if (!schema || schema.type !== 'object')
+        return false;
+
+    if (schema.$_getFlag('unknown') === true ||
+        schema._preferences?.allowUnknown === true)
+        return true;
+
+    // Joi only allows any key when neither keys nor patterns are specified
+    return schema.$_terms.keys === null && schema.$_terms.patterns === null;
+}
+
+/**
+ * @returns {object|null} schema for `key`, `any` when it falls under an object
+ *                        that allows unknown keys, null when it is not allowed
+ */
+function resolveKeySchema(schema, key) {
+    const path = Array.isArray(key) ? key : key.split('.');
+    let current = schema;
+
+    for (const segment of path) {
+        let next = null;
+
+        try {
+            next = current.extract(segment);
+        } catch (err) {
+            if (!/Schema does not contain path/i.test(err.message))
+                throw err;
+        }
+
+        if (!next)
+            return allowsUnknownKeys(current) ? current.$_root.any() : null;
+
+        current = next;
+    }
+
+    return current;
+}
+
 function validateConditionValue(condition, schema, createError) {
     const { key, operator, value } = condition;
 
@@ -41,11 +80,11 @@ function validateConditionSchema(condition, schema, createError) {
                 return c;
 
             let keySchema = null;
+
             try {
-                keySchema = schema.extract(c.key);
+                keySchema = resolveKeySchema(schema, c.key);
             } catch (err) {
-                if (!/Schema does not contain path/i.test(err.message))
-                    throw createError('unknown', { cause: err.message });
+                throw createError('unknown', { cause: err.message });
             }
 
             if (!keySchema)
@@ -89,10 +128,9 @@ function validateKey(key, schema, createError) {
     let keySchema = null;
 
     try {
-        keySchema = schema.extract(key);
+        keySchema = resolveKeySchema(schema, key);
     } catch (err) {
-        if (!/Schema does not contain path/i.test(err.message))
-            return createError('unknown', { cause: err.message });
+        return createError('unknown', { cause: err.message });
     }
 
     if (!keySchema)

@@ -109,6 +109,57 @@ describe('# joi-extensions', function() {
             assert.deepEqual(result.value, expected);
         });
 
+        it('should allow any key when the schema allows unknown keys', () => {
+            const input = JSON.stringify({ key: 'foo', operator: 'eq', value: 1 });
+            const expected = JSON.parse(input);
+            const schema = Joi.object({ bar: Joi.string() }).unknown();
+            const result = Joi.aql().condition().schema(schema).validate(input);
+
+            assert(!result.error, 'no error');
+            assert.deepEqual(result.value, expected);
+        });
+
+        it('should allow any key when the schema has no keys', () => {
+            const input = JSON.stringify({ key: 'foo', operator: 'eq', value: 1 });
+            const expected = JSON.parse(input);
+            const result = Joi.aql().condition().schema(Joi.object()).validate(input);
+
+            assert(!result.error, 'no error');
+            assert.deepEqual(result.value, expected);
+        });
+
+        it('should allow any nested key below an object that allows unknown keys', () => {
+            const input = JSON.stringify({ key: 'meta.a.b', operator: 'eq', value: 1 });
+            const expected = JSON.parse(input);
+            const schema = Joi.object({ meta: Joi.object().unknown() });
+            const result = Joi.aql().condition().schema(schema).validate(input);
+
+            assert(!result.error, 'no error');
+            assert.deepEqual(result.value, expected);
+        });
+
+        it('should still emit an aql.condition.key error for an empty object schema', () => {
+            const input = JSON.stringify({ key: 'foo', operator: 'eq', value: 1 });
+            const expected = JSON.parse(input);
+            const schema = Joi.object({ meta: Joi.object({}) });
+            const result = Joi.aql().condition().schema(schema).validate(input);
+
+            assert(result.error instanceof Error, 'Validation error returned');
+            assert.equal(result.error?.details?.at(0)?.type, 'aql.condition.key');
+            assert.deepEqual(result.value, expected);
+        });
+
+        it('should still validate values of known keys in an unknown-allowing schema', () => {
+            const input = JSON.stringify({ key: 'bar', operator: 'eq', value: 1 });
+            const expected = JSON.parse(input);
+            const schema = Joi.object({ bar: Joi.string() }).unknown();
+            const result = Joi.aql().condition().schema(schema).validate(input);
+
+            assert(result.error instanceof Error, 'Validation error returned');
+            assert.equal(result.error?.details?.at(0)?.type, 'aql.condition.value');
+            assert.deepEqual(result.value, expected);
+        });
+
     });
 
     describe('# fields', function() {
@@ -178,6 +229,16 @@ describe('# joi-extensions', function() {
             assert.deepEqual(result.value, expected);
         });
 
+        it('should allow any key when the schema allows unknown keys', () => {
+            const input = 'foo,meta(a,b)';
+            const expected = { foo: true, meta: { a: true, b: true } };
+            const schema = Joi.object({ meta: Joi.object() }).unknown();
+            const result = Joi.aql().fields().schema(schema).validate(input);
+
+            assert(!result.error, 'no error');
+            assert.deepEqual(result.value, expected);
+        });
+
     })
 
     describe('# order', function() {
@@ -226,6 +287,19 @@ describe('# joi-extensions', function() {
 
             assert(result.error instanceof Error, 'Validation error returned');
             assert.equal(result.error?.details?.at(0)?.type, 'aql.order.key');
+            assert.deepEqual(result.value, expected);
+        });
+
+        it('should allow any key when the schema allows unknown keys', () => {
+            const input = 'foo,-meta.a';
+            const expected = [
+                { key: 'foo', direction: 'asc' },
+                { key: 'meta.a', direction: 'desc' },
+            ];
+            const schema = Joi.object({ meta: Joi.object() }).unknown();
+            const result = Joi.aql().order().schema(schema).validate(input);
+
+            assert(!result.error, 'no error');
             assert.deepEqual(result.value, expected);
         });
 
